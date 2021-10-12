@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31702.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MPiAA_lab3", "MPiAA_lab3\MPiAA_lab3.vcxproj", "{CDD50C7E-3B98-43CF-84E1-695BF14398A7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CDD50C7E-3B98-43CF-84E1-695BF14398A7}.Debug|x64.ActiveCfg = Debug|x64
+		{CDD50C7E-3B98-43CF-84E1-695BF14398A7}.Debug|x64.Build.0 = Debug|x64
+		{CDD50C7E-3B98-43CF-84E1-695BF14398A7}.Debug|x86.ActiveCfg = Debug|Win32
+		{CDD50C7E-3B98-43CF-84E1-695BF14398A7}.Debug|x86.Build.0 = Debug|Win32
+		{CDD50C7E-3B98-43CF-84E1-695BF14398A7}.Release|x64.ActiveCfg = Release|x64
+		{CDD50C7E-3B98-43CF-84E1-695BF14398A7}.Release|x64.Build.0 = Release|x64
+		{CDD50C7E-3B98-43CF-84E1-695BF14398A7}.Release|x86.ActiveCfg = Release|Win32
+		{CDD50C7E-3B98-43CF-84E1-695BF14398A7}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EA56BC48-39EB-45FE-848A-A574A37F9E70}
+	EndGlobalSection
+EndGlobal
