@@ -94,17 +94,20 @@ int main(int argc, char** argv)
    MPI_Bcast(&n, 1, MPI_INTEGER, root, MPI_COMM_WORLD);
    MPI_Bcast(&m, 1, MPI_INTEGER, root, MPI_COMM_WORLD);
 
+   // Делимся вектором со всеми процессами
    if (rank != root) {
    	vector = new double[m];
    }
-
-   // Делимся вектором со всеми процессами
    MPI_Bcast(vector, m, MPI_DOUBLE, root, MPI_COMM_WORLD);
 
-   int* splitArray = new int[size];
+   // Говорим, сколько элементов матрицы достанется каждому процессу
+   // по принципу: все процессы получают равное число строк, идущих друг за другом.
+   // Если строк больше, чем число процессов, то лишние строки выдаются процессам по одной, начиная с первого.
+   // Если строк меньше, чем число процессов, то последние процессы останутся без строк.
+   int* splitArray = new int[size]; // Массив, где [i] элемент показывает, сколько элементов будет передано i-му процессу
    if (rank == root) {
-   	int mainSplit = n / size;
-   	int additionSplit = n % size;
+   	int mainSplit = n / size;     // Равное деление на части
+   	int additionSplit = n % size; // Оставшиеся от деления на части строки
    	for (int i = 0; i < size; ++i) {
    		splitArray[i] = mainSplit * m;
    		if (additionSplit > 0) {
@@ -113,25 +116,33 @@ int main(int argc, char** argv)
    		}
    	}
    }
+   // Раздаём массив всем процессам
    MPI_Bcast(splitArray, size, MPI_INTEGER, root, MPI_COMM_WORLD);
 
-   int* displs = new int[size];
+   // Второй массив распределения, нужен для того, чтобы обеспечивать лёгкий сдвиг указателя.
+   // [i] элемент показывает, начиная с какого места в матрице начнутся строки для i-го процесса
+   int* displs = nullptr; 
    if (rank == root) {
+      displs = new int[size];
       displs[0] = 0;
       for (int i = 1; i < size; ++i) {
          displs[i] = displs[i - 1] + splitArray[i - 1];
       }
    }
-   // Делаем с запасом в 1 элемент, чтобы избежать возможных ошибок
+   // Каждому процессу создаём массив под выделенные для текущего процесса строки
    double* splittedMatrix = new double[splitArray[rank]];
 
+   // Разделяем между ВСЕМИ процессами матрицу [martix] (она хранится только в [0] процессе, остальным она не нужна), 
+   // распределяем их по [splitArray] и [displs] и записываем в [splittedMatrix] (у каждого процесса своя) 
    MPI_Scatterv(matrix, splitArray, displs, MPI_DOUBLE, splittedMatrix, splitArray[rank], MPI_DOUBLE, root, MPI_COMM_WORLD);
 
+   // Здесь сохраним результат работы каждого процесса (перемножения части строк на вектор)
    int partOfResultSize = splitArray[rank] / m;
    double* partOfResult = new double[partOfResultSize];
    matrix_mult(partOfResult, partOfResultSize, m, m, 1, splittedMatrix, vector);
 
-   double* resultVec = nullptr;
+   // После произведения строк на вектор, каждые [m] столбцов строки превратились в одну, поэтому просто делим на [m]
+   double* resultVec = nullptr;  // Вектор с результатом умножения, нужен только для главного процесса
    if (rank == root) {
       for (int i = 0; i < size; ++i) {
          splitArray[i] /= m;
@@ -140,9 +151,11 @@ int main(int argc, char** argv)
 
       resultVec = new double[n];
    }
-
+   // Склеиваем результаты СО ВСЕХ процессов в процесс [root] в массив [resultVec], распределяем по [splitArray] и [displs],
+   // берём их из [partOfResult]
    MPI_Gatherv(partOfResult, partOfResultSize, MPI_DOUBLE, resultVec, splitArray, displs, MPI_DOUBLE, root, MPI_COMM_WORLD);
 
+   // Выводим в терминал
    if (rank == root) {
       cout << "Result is: ";
       vector_print(resultVec, n);
