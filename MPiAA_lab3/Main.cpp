@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <omp.h>
 
-const int max_val = 500;
+const int max_val = 500;		
 const int min_val = -500;
 
 void make_array(int* arr, int sz) {
@@ -31,24 +31,33 @@ int main(int argc, char** argv)
 	if (rank == 0) {
 		std::cout << "Size of MPI system is " << size << std::endl << std::endl;
 
-#pragma omp parallel for num_threads(size)
+		auto normals = new std::pair<MPI_Request, double>[size - 1];
 		for (int i = 1; i < size; ++i) {
-			double normal = 0;
-			MPI_Request  req;
-
-#pragma omp critical
-			MPI_Irecv(&normal, 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &req);
-
-			int flag = 0;
-			MPI_Status stat;
-			while (!flag) {
-#pragma omp critical
-				MPI_Test(&req, &flag, &stat);
-			}
-
-#pragma omp critical
-			std::cout << "Received rank is " << i << ", normal is " << normal << std::endl;
+			MPI_Irecv(&(normals[i-1].second), 1, MPI_DOUBLE, i, 0, MPI_COMM_WORLD, &(normals[i-1].first));
 		}
+
+		int couted_count = 1;
+		bool* couted = new bool[size - 1];
+		for (int i = 0; i < size - 1; ++i) couted[i] = false;
+
+		while (couted_count != size) {
+			for (int i = 1; i < size; ++i) {
+				if (couted[i - 1]) continue; // Если i-ый элемент уже был выведен, то скипаем
+
+				int flag = 0;
+            MPI_Status stat;
+				MPI_Test(&(normals[i - 1].first), &flag, &stat);
+
+				if (flag) { // Если i-ый элемент был получен
+					std::cout << "Received rank is " << i << ", normal is " << normals[i-1].second << std::endl;
+					++couted_count;
+					couted[i - 1] = true;
+				}
+			}
+		}
+
+		delete[] couted;
+		delete[] normals;
 
 		std::cout << std::endl << "Program is done" << std::endl;
 	}
