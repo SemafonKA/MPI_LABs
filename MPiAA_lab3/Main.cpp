@@ -25,6 +25,13 @@ void matrix_mult(double* c, int n, int m, int o, int p, double* x, double* y)
    }
 }
 
+/// <summary>
+/// Функция вывода вектора на экран в виде [a0, a1, .., an], n = size - 1
+/// </summary>
+/// <typeparam name="T"> - тип данных вектора (должен поддерживаться cout)</typeparam>
+/// <param name="vec"> - указатель на начало вектора,</param>
+/// <param name="size"> - размер вектора,</param>
+/// <param name="newLine"> - необязательный параметр, вставлять ли перенос строки в конце вывода</param>
 template<typename T>
 void vector_print(const T* vec, const int size, const bool newLine = true) {
    cout << "[";
@@ -38,12 +45,18 @@ void vector_print(const T* vec, const int size, const bool newLine = true) {
    if (newLine) cout << endl;
 }
 
+/// <summary>
+/// Удаление вектора по ненулевому указателю и зануление указателя.
+/// Если передан nullptr, то ничего не происходит
+/// </summary>
+/// <typeparam name="T"> - тип данных вектора</typeparam>
+/// <param name="vec"> - указатель на начало вектора</param>
 template<typename T>
 inline void deleteNotNull(T*& vec) {
    if (vec != nullptr) {
       delete[] vec;
+      vec = nullptr;
    }
-   vec = nullptr;
 }
 
 int main(int argc, char** argv)
