@@ -40,7 +40,7 @@ void vector_print(const T* vec, const int size, const bool newLine = true) {
 
 template<typename T>
 inline void deleteNotNull(T*& vec) {
-   if (vec != nullptr || vec != NULL) {
+   if (vec != nullptr) {
       delete[] vec;
    }
    vec = nullptr;
