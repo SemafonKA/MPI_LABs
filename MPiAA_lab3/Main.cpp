@@ -9,9 +9,9 @@ using namespace std;
 /// </summary>
 /// <param name="c"> - матрица, в которой будет хранится результат перемножения</param>
 /// <param name="n"> - Число строк первой матрицы</param>
-/// <param name="m"> - Число столбцов первой матрциы</param>
+/// <param name="m"> - Число столбцов первой матрицы</param>
 /// <param name="o"> - Число строк второй матрицы</param>
-/// <param name="p"> - Число столбцов второй матрциы</param>
+/// <param name="p"> - Число столбцов второй матрицы</param>
 /// <param name="x"> - первая матрица</param>
 /// <param name="y"> - вторая матрица</param>
 void matrix_mult(double* c, int n, int m, int o, int p, double* x, double* y)
@@ -89,11 +89,13 @@ int main(int argc, char** argv)
       for (int i = 0; i < n * m; ++i) {
       	cin >> matrix[i];
       }	
-      
+      cout << endl;
+
       cout << "Enter vector: " << endl;
       for (int i = 0; i < m; ++i) {
       	cin >> vector[i];
       }
+      cout << endl;
 
       // Печатаем результат линейного перемножения матрицы на вектор для проверки правильности
       double* linearResult = new double[n];
